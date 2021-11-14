@@ -4,17 +4,28 @@ import logging
 from pymongo import MongoClient
 from discord.ext import commands
 
-# bot declaration
-description = '''BME SoftwareArchitecture HomeWork
-Recipe sharing discord bot.'''
-intents = discord.Intents.default()
-bot = commands.Bot(command_prefix='!', description=description, intents=intents)
-database = None
-
-
 # Constants
 CONFIG_FILE = "recipebotconfig.ini"
-BOT_CHANNEL = None
+
+
+def main():
+    config_obj = configparser.ConfigParser()
+    config_obj.read(CONFIG_FILE)
+    token = config_obj['DiscordBot']['token']
+
+    logger = logging.getLogger('discord')
+    logger.setLevel(logging.DEBUG)
+    handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
+    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
+    logger.addHandler(handler)
+
+    description = '''BME SoftwareArchitecture HomeWork Recipe sharing discord bot.'''
+    intents = discord.Intents.default()
+    bot = RecipeBot(command_prefix='!', description=description, intents=intents)
+    bot.add_cog(BotCommands(bot))
+
+    bot.run(token)
+
 
 def get_database():
     config_obj = configparser.ConfigParser()
@@ -25,29 +36,40 @@ def get_database():
     return client[database_config['database']]
 
 
-@bot.event
-async def on_message(message):
-    if message.channel.name != BOT_CHANNEL:
-        return
+class BotCommands(commands.Cog, name='Command module for recipe bot'):
+    def __init__(self, bot):
+        self.database = get_database()
+        self.bot = bot
 
-@bot.event
-async def on_ready():
-    print('Logged in as')
-    print(bot.user.name)
-    print(bot.user.id)
-    print('------')
+    @commands.command(name="test")
+    async def test_command(self, ctx):
+        await ctx.send(f'Hello {ctx.author.name}!')
+
+
+class RecipeBot(commands.Bot):
+    bot_channel = None
+
+    async def on_ready(self):
+        config_obj = configparser.ConfigParser()
+        config_obj.read(CONFIG_FILE)
+        bot_config = config_obj['DiscordBot']
+
+        self.bot_channel = bot_config['channel']
+
+        print('Logged in as')
+        print(self.user.name)
+        print(self.user.id)
+        print('------')
+
+    async def on_message(self, message):
+        if self.user == message.author:
+            return
+
+        if message.channel.name != self.bot_channel:
+            return
+
+        await self.process_commands(message)
+
 
 if __name__ == "__main__":
-    config_obj = configparser.ConfigParser()
-    config_obj.read(CONFIG_FILE)
-    token = config_obj['DiscordBot']['token']
-    BOT_CHANNEL = config_obj['DiscordBot']['channel']
-
-    logger = logging.getLogger('discord')
-    logger.setLevel(logging.DEBUG)
-    handler = logging.FileHandler(filename='discord.log', encoding='utf-8', mode='w')
-    handler.setFormatter(logging.Formatter('%(asctime)s:%(levelname)s:%(name)s: %(message)s'))
-    logger.addHandler(handler)
-
-    database = get_database()
-    bot.run(token)
+    main()
