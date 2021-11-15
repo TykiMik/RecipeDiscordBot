@@ -3,6 +3,7 @@ import configparser
 import logging
 from pymongo import MongoClient
 from discord.ext import commands
+import io
 
 # Constants
 CONFIG_FILE = "recipebotconfig.ini"
@@ -69,7 +70,7 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
         await ctx.send(f'Recipe added, request it anytime with !get_recipe \"{ctx.author.name}\\{name}\"')
 
     @commands.command(name="get_recipe")
-    async def get_recipe_command(self, ctx, extended_name):
+    async def get_recipe_command(self, ctx, extended_name, private: bool = False, file: bool = False):
         (creator, name) = extended_name.split('\\')
         query = {
             "creator": creator,
@@ -80,13 +81,30 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
             await ctx.send(f'Sorry I couldn\'t find any recipe as \"{extended_name}\"')
             return
 
-        response = self.create_recipe_message(
-            stored_recipe['creator'],
-            stored_recipe['name'],
-            stored_recipe['content'],
-            stored_recipe['tags']
-        )
-        await ctx.send(embed=response)
+        if not file:
+            response = self.create_recipe_message(
+                stored_recipe['creator'],
+                stored_recipe['name'],
+                stored_recipe['content'],
+                stored_recipe['tags']
+            )
+            if not private:
+                await ctx.send(embed=response)
+            else:
+                await ctx.author.send(embed=response)
+        else:
+            response = self.create_recipe_file(
+                stored_recipe['creator'],
+                stored_recipe['name'],
+                stored_recipe['content'],
+                stored_recipe['tags']
+            )
+            file_name = stored_recipe['name'].replace(' ', '_')
+            if not private:
+                await ctx.send(file=discord.File(response, f'{file_name}.txt'))
+            else:
+                await ctx.author.send(file=discord.File(response, f'{file_name}.txt'))
+
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -102,6 +120,21 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
             "content": content,
             "tags": tags
         }
+
+    @staticmethod
+    def create_recipe_file(creator, name, content, tags):
+        text = f'''
+        {creator}
+        
+        {name}
+        
+        Recipe:
+        {content}
+        
+        Tags:
+        {tags}'''
+
+        return io.StringIO(text)
 
     @staticmethod
     def create_recipe_message(creator, name, content, tags):
