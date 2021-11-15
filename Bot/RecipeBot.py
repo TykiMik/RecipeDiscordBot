@@ -36,14 +36,50 @@ def get_database():
     return client[database_config['database']]
 
 
+def create_recipe(creator, creator_id, recipe_name, content, tags):
+    return {
+        "creator": creator,
+        "creator_id": creator_id,
+        "name": recipe_name,
+        "content": content,
+        "tags": tags
+    }
+
+
 class BotCommands(commands.Cog, name='Command module for recipe bot'):
     def __init__(self, bot):
-        self.database = get_database()
+        database = get_database()
+        config_obj = configparser.ConfigParser()
+        config_obj.read(CONFIG_FILE)
+        db_config = config_obj['MongoDB']
+
+        self.recipes = database[db_config['recipes_collection']]
         self.bot = bot
 
     @commands.command(name="test")
     async def test_command(self, ctx):
         await ctx.send(f'Hello {ctx.author.name}!')
+
+    @commands.command(name="upload_recipe")
+    async def upload_recipe_command(self, ctx, name: str, content: str, *tags):
+        query = {
+            "creator": ctx.author.name,
+            "name": name
+        }
+        stored_recipe = self.recipes.find_one(query)
+        if stored_recipe is not None:
+            await ctx.send(f'A recipe already stored as \"{ctx.author.name}\\{name}\"')
+            return
+
+        recipe = create_recipe(ctx.author.name, ctx.author.id, name, content, tags)
+
+        self.recipes.insert_one(recipe)
+        await ctx.send(f'Recipe added, request it anytime with !get_recipe \"{ctx.author.name}\\{name}\"')
+
+    @commands.Cog.listener()
+    async def on_command_error(self, ctx, error):
+        if isinstance(error, discord.ext.commands.CommandNotFound):
+            await ctx.send('I do not know that command?!')
 
 
 class RecipeBot(commands.Bot):
