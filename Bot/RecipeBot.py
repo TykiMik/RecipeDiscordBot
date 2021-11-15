@@ -36,14 +36,6 @@ def get_database():
     return client[database_config['database']]
 
 
-def create_recipe(creator, creator_id, recipe_name, content, tags):
-    return {
-        "creator": creator,
-        "creator_id": creator_id,
-        "name": recipe_name,
-        "content": content,
-        "tags": tags
-    }
 
 
 class BotCommands(commands.Cog, name='Command module for recipe bot'):
@@ -71,15 +63,57 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
             await ctx.send(f'A recipe already stored as \"{ctx.author.name}\\{name}\"')
             return
 
-        recipe = create_recipe(ctx.author.name, ctx.author.id, name, content, tags)
+        recipe = self.create_recipe(ctx.author.name, ctx.author.id, name, content, tags)
 
         self.recipes.insert_one(recipe)
         await ctx.send(f'Recipe added, request it anytime with !get_recipe \"{ctx.author.name}\\{name}\"')
+
+    @commands.command(name="get_recipe")
+    async def get_recipe_command(self, ctx, extended_name):
+        (creator, name) = extended_name.split('\\')
+        query = {
+            "creator": creator,
+            "name": name
+        }
+        stored_recipe = self.recipes.find_one(query)
+        if stored_recipe is None:
+            await ctx.send(f'Sorry I couldn\'t find any recipe as \"{extended_name}\"')
+            return
+
+        response = self.create_recipe_message(
+            stored_recipe['creator'],
+            stored_recipe['name'],
+            stored_recipe['content'],
+            stored_recipe['tags']
+        )
+        await ctx.send(embed=response)
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
         if isinstance(error, discord.ext.commands.CommandNotFound):
             await ctx.send('I do not know that command?!')
+
+    @staticmethod
+    def create_recipe(creator, creator_id, recipe_name, content, tags):
+        return {
+            "creator": creator,
+            "creator_id": creator_id,
+            "name": recipe_name,
+            "content": content,
+            "tags": tags
+        }
+
+    @staticmethod
+    def create_recipe_message(creator, name, content, tags):
+        embed = discord.Embed(
+            title=name,
+            color=discord.Color.blurple()
+        )
+        embed.set_author(name=creator)
+        embed.add_field(name="**Recipe**", value=content, inline=False)
+        embed.add_field(name="*Tags*", value=tags, inline=False)
+
+        return embed
 
 
 class RecipeBot(commands.Bot):
