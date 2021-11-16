@@ -1,30 +1,34 @@
 import os
 from flask import Flask
-from flask_restful import Resource, Api
-from flask_pymongo import PyMongo
-from flaskapp.models.RecipeModel import RecipeModel
+from flask_restful import Api
+from flaskapp.database.db import initialize_db
+from flaskapp.resources.routes import initialize_routes
+from flask_jwt_extended import JWTManager
 
 application = Flask(__name__)
 api = Api(application)
-application.config["MONGO_URI"] = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + \
-            os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
 
-mongo = PyMongo(application)
-db = mongo.db
-recipe_collection = db['Recipes']
+# for docker
+# application.config['MONGODB_DB'] = os.environ['MONGODB_DATABASE']
+# application.config['MONGODB_HOST'] = os.environ['MONGODB_HOSTNAME']
+# application.config['MONGODB_PORT'] = 27017
+# application.config['MONGODB_USERNAME'] = os.environ['MONGODB_USERNAME']
+# application.config['MONGODB_PASSWORD'] = os.environ['MONGODB_PASSWORD']
 
+# for local testing
+application.config['MONGODB_SETTINGS'] = {
+    'host': 'mongodb://localhost:27017/RecipeBot'
+}
 
-class Recipes(Resource):
-    def get(self):
-        recipes = []
-        for recipe in recipe_collection.find({}):
-            recipes.append(RecipeModel(**recipe))
-        return {
-            "recipes": [recipe.to_json() for recipe in recipes],
-        }
+# for local
+application.config['SECRET_KEY'] = 'super-secret'
 
+# for docker
+# application.config.from_envvar('ENV_FILE_LOCATION')
 
-api.add_resource(Recipes, '/', '/Recipes')
+initialize_db(application)
+initialize_routes(api)
+jwt = JWTManager(application)
 
 
 if __name__ == "__main__":
