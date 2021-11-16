@@ -11,6 +11,7 @@ class Recipes(db.Document):
     tags = db.ListField(db.StringField())
     request_count = db.IntField()
     ratings = db.ListField(db.IntField())
+    creation_date = db.DateTimeField()
 
 
 class Admins(db.Document):
