@@ -4,6 +4,7 @@ from flask_restful import Api
 from flaskapp.database.db import initialize_db
 from flaskapp.resources.routes import initialize_routes
 from flask_jwt_extended import JWTManager
+from flask_cors import CORS
 
 application = Flask(__name__)
 api = Api(application)
@@ -26,6 +27,7 @@ application.config['SECRET_KEY'] = 'super-secret'
 # for docker
 # application.config.from_envvar('ENV_FILE_LOCATION')
 
+cors = CORS(application, resources={r"/api/*": {"origins": "*"}})
 initialize_db(application)
 initialize_routes(api)
 jwt = JWTManager(application)

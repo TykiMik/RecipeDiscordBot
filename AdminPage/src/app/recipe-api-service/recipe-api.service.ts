@@ -3,6 +3,12 @@ import { throwError } from 'rxjs';
 import { HttpErrorResponse, HttpClient, HttpParams } from '@angular/common/http';
 import { catchError, retry } from 'rxjs/operators';
 
+export interface RecipeResponse {
+  items: Recipe[];
+  total_count: number;
+}
+
+
 export interface Recipe {
   creator: string;
   creator_id: bigint;
@@ -14,19 +20,20 @@ export interface Recipe {
   creation_date: Date;
 }
 
-@Injectable()
+
+@Injectable({ providedIn: 'root' })
 export class RecipeApiService {
-  apiURL = 'http://192.168.0.241:5000/api/';
+  apiURL = 'http://192.168.0.241:5000/api/recipes';
 
   constructor(private http: HttpClient) { }
 
   getRecipes(page: number, per_page: number = 30) {
     const options = { 
       params: new HttpParams()
-      .set('page', page)
+      .set('page', page+1)
       .set('per_page', per_page) 
     };
-    return this.http.get<Recipe[]>(this.apiURL, options)
+    return this.http.get<RecipeResponse>(this.apiURL, options)
       .pipe(
         retry(2),
         catchError(this.handleError)
