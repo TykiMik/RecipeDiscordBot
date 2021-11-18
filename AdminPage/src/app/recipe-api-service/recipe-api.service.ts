@@ -28,12 +28,27 @@ export class RecipeApiService {
 
   constructor(private http: HttpClient) { }
 
-  getRecipes(page: number, per_page: number = 30) {
-    const options = { 
-      params: new HttpParams()
+  getRecipes(page: number, per_page: number = 30, recipeNameFilter: string = "", creatorFilter: string = "", creatorIdFilter: string = "") {
+    let params: HttpParams = new HttpParams()
       .set('page', page+1)
-      .set('per_page', per_page) 
-    };
+      .set('per_page', per_page);
+    
+
+    if (recipeNameFilter)
+    {
+      params = params.set('recipe_name', recipeNameFilter)
+    }
+    if (creatorFilter)
+    {
+      params = params.set('creator', creatorFilter)
+    }
+    if (creatorIdFilter)
+    {
+      params = params.set('creator_id', creatorIdFilter)
+    }
+    const options = { 
+      params: params
+    }; 
     return this.http.get<RecipeResponse>(this.apiURL, options)
       .pipe(
         retry(2),

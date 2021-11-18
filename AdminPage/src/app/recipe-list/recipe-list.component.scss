@@ -1,7 +1,18 @@
 /* Structure */
 .container {
   position: relative;
-  margin: 5px;
+  width: 80%;
+  margin: 10px auto;
+}
+
+.filter-container{
+  padding-top: 10px;
+  margin: 10px 10px;
+}
+
+.form-field{
+  margin-left: 10px;
+  margin-right: 10px;
 }
 
 .table-container {

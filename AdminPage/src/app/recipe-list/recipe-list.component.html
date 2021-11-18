@@ -1,4 +1,32 @@
 <div class="container mat-elevation-z8">
+    <div class="filter-container">
+      <mat-form-field class="form-field" appearance="standard">
+        <mat-label>Recipe name</mat-label>
+        <input matInput type="text" [(ngModel)]="recipeNameFilter" (keyup)="applyFilter($event)">
+        <button *ngIf="recipeNameFilter" matSuffix mat-icon-button (click)="recipeNameFilter='';applyFilter($event)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      <mat-form-field class="form-field" appearance="standard">
+        <mat-label>Creator</mat-label>
+        <input matInput type="text" [(ngModel)]="creatorFilter" (keyup)="applyFilter($event)">
+        <button *ngIf="creatorFilter" matSuffix mat-icon-button  (click)="creatorFilter='';applyFilter($event)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+      <mat-form-field class="form-field" appearance="standard">
+        <mat-label>Creator id</mat-label>
+        <input matInput type="text" [(ngModel)]="creatorIdFilter" (keyup)="applyFilter($event)">
+        <button *ngIf="creatorIdFilter" matSuffix mat-icon-button  (click)="creatorIdFilter='';applyFilter($event)">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+
+      <button class="delete_btn" mat-fab color="primary" (click)="deleteSelected()" [disabled]="!selection.hasValue()">
+        <mat-icon>delete</mat-icon>
+      </button>
+    </div>
+
     <div class="loading-shade"
          *ngIf="isLoadingResults">
       <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
@@ -58,10 +86,5 @@
         (click)="selection.toggle(row)"></tr>
       </table>
     </div>
-    <mat-paginator [length]="resultsLength" [pageSize]="30"></mat-paginator>
-</div>
-<div>
-  <button class="delete_btn" mat-fab color="primary" (click)="deleteSelected()" [disabled]="!selection.hasValue()">
-    <mat-icon>delete</mat-icon>
-  </button>
+    <mat-paginator [length]="resultsLength" [pageSizeOptions]="pageSizeOptions"></mat-paginator>
 </div>

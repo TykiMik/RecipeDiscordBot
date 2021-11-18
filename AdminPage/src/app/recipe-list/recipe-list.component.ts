@@ -19,7 +19,13 @@ export class RecipeListComponent implements AfterViewInit{
   resultsLength = 0;
 
   @ViewChild(MatPaginator) paginator: MatPaginator | undefined;
+  pageSizeOptions: number[] = [10,20,30,40,50,100,200,500];
   selection = new SelectionModel<Recipe>(true, []);
+
+  recipeNameFilter: string = "";
+  creatorFilter: string = "";
+  creatorIdFilter: string = "";
+
 
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -38,15 +44,23 @@ export class RecipeListComponent implements AfterViewInit{
 
   constructor(private _recipeService: RecipeApiService) { }
 
+  getData(){
+    return this._recipeService.getRecipes(
+      this.paginator!.pageIndex,
+      this.paginator!.pageSize,
+      this.recipeNameFilter,
+      this.creatorFilter,
+      this.creatorIdFilter)
+  }
+
   ngAfterViewInit(): void {
     this.paginator!.page
       .pipe(
         startWith({}),
         switchMap(() => {
           this.isLoadingResults = true;
-          return this._recipeService.getRecipes(
-            this.paginator!.pageIndex,
-          ).pipe(catchError(() => observableOf(null)));
+          return this.getData()
+          .pipe(catchError(() => observableOf(null)));
         }),
         map(data => {
           // Flip flag to show that loading has finished.
@@ -72,6 +86,29 @@ export class RecipeListComponent implements AfterViewInit{
         this.selection.clear();
       });
     }
+  }
+
+  applyFilter(event: Event) {
+    this.isLoadingResults = true;
+
+    this.getData()
+    .pipe(catchError(() => observableOf(null)))
+    .subscribe(data =>
+    {
+      this.isLoadingResults = false;
+
+      if (data === null) {
+        this.recipes = []
+      }
+      else
+      {
+        this.resultsLength = data.total_count;
+        this.recipes = data.items;
+      }
+
+      this.paginator?.firstPage();
+      this.selection.clear();
+    });
   }
 
 }
