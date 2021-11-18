@@ -53,11 +53,6 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
         self.recipes = database[db_config['recipes_collection']]
         self.bot = bot
 
-    @commands.command(name="test")
-    async def test_command(self, ctx):
-        everything = list(self.recipes.find({}))
-        await ctx.send(f"Hello {ctx.author.name}!")
-
     @commands.command(name="upload_recipe")
     async def upload_recipe_command(self, ctx, name: str, content: str, *tags):
         query = {
