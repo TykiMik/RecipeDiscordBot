@@ -119,7 +119,6 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
                 await ctx.send('Recipe file must be a text/plain document!')
                 return
 
-    # TODO: Add popularity, avg. ratings
     @commands.command(name="get_recipe")
     async def get_recipe_command(self, ctx, extended_name, private: bool = False, file: bool = False):
         (creator, name) = extended_name.split('\\')
