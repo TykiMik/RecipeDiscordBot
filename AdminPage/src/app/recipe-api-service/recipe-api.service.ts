@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
-import { HttpErrorResponse, HttpClient, HttpParams } from '@angular/common/http';
+import { HttpErrorResponse, HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { catchError, retry } from 'rxjs/operators';
 
 export interface RecipeResponse {
@@ -10,13 +10,14 @@ export interface RecipeResponse {
 
 
 export interface Recipe {
+  id: string;
   creator: string;
   creator_id: bigint;
   name: string;
   content: string;
   tags: string[];
   request_count: number;
-  ratings: number[];
+  rating: number;
   creation_date: Date;
 }
 
@@ -34,6 +35,19 @@ export class RecipeApiService {
       .set('per_page', per_page) 
     };
     return this.http.get<RecipeResponse>(this.apiURL, options)
+      .pipe(
+        retry(2),
+        catchError(this.handleError)
+      );
+  }
+
+  deleteRecipes(ids: string[]){
+    const options = {
+      body: {
+        items: ids
+      },
+    };
+    return this.http.delete<RecipeResponse>(this.apiURL,options)
       .pipe(
         retry(2),
         catchError(this.handleError)

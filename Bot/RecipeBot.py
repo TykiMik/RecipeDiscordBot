@@ -37,8 +37,6 @@ def get_database():
     return client[database_config['database']]
 
 
-
-
 class BotCommands(commands.Cog, name='Command module for recipe bot'):
     def __init__(self, bot):
         database = get_database()

@@ -6,10 +6,7 @@ import { AppComponent } from './app.component';
 import { HttpClientModule } from '@angular/common/http';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { RecipeListComponent } from './recipe-list/recipe-list.component';
-import {MatNativeDateModule} from '@angular/material/core';
-import {MatPaginatorModule} from '@angular/material/paginator';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
-import {MatTableModule} from '@angular/material/table';
+import { MaterialModule } from 'src/material.module';
 
 
 @NgModule({
@@ -22,10 +19,7 @@ import {MatTableModule} from '@angular/material/table';
     AppRoutingModule,
     HttpClientModule,
     BrowserAnimationsModule,
-    MatNativeDateModule,
-    MatPaginatorModule,
-    MatProgressSpinnerModule,
-    MatTableModule
+    MaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
