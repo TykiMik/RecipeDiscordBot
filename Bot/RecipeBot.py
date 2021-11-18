@@ -139,7 +139,9 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
                 stored_recipe['creator'],
                 stored_recipe['name'],
                 stored_recipe['content'],
-                stored_recipe['tags']
+                stored_recipe['tags'],
+                stored_recipe['request_count'],
+                stored_recipe['ratings']
             )
             if not private:
                 await ctx.send(embed=response)
@@ -150,7 +152,9 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
                 stored_recipe['creator'],
                 stored_recipe['name'],
                 stored_recipe['content'],
-                stored_recipe['tags']
+                stored_recipe['tags'],
+                stored_recipe['request_count'],
+                stored_recipe['ratings']
             )
             file_name = stored_recipe['name'].replace(' ', '_')
             if not private:
@@ -274,7 +278,7 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
         }
 
     @staticmethod
-    def create_recipe_file(creator, name, content, tags):
+    def create_recipe_file(creator, name, content, tags, request_count, ratings):
         text = f'''
         {creator}
         
@@ -284,12 +288,18 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
         {content}
         
         Tags:
-        {tags}'''
+        {tags}
+        
+        Popularity:
+        {request_count}
+        
+        Avg. rating:
+        {str(mean(ratings)) if len(ratings) > 0 else 'No ratings yet'}'''
 
         return io.StringIO(text)
 
     @staticmethod
-    def create_recipe_message(creator, name, content, tags):
+    def create_recipe_message(creator, name, content, tags, request_count, ratings):
         embed = discord.Embed(
             title=name,
             color=discord.Color.blurple()
@@ -297,6 +307,8 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
         embed.set_author(name=creator)
         embed.add_field(name="**Recipe**", value=content, inline=False)
         embed.add_field(name="*Tags*", value=tags, inline=False)
+        embed.add_field(name="*Popularity*", value=request_count, inline=False)
+        embed.add_field(name="*Avg. rating*", value=str(mean(ratings)) if len(ratings) > 0 else 'No ratings yet', inline=False)
 
         return embed
 
