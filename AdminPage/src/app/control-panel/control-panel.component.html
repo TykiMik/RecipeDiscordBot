@@ -1,0 +1,12 @@
+<mat-toolbar color="primary" class="expanded-toolbar">
+    <div fxLayout="row" fxShow="false" fxShow.gt-sm>
+        Control Panel
+    </div>
+    <div fxLayout="row" fxShow="false" fxShow.gt-sm>
+      <button mat-button (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        Logout
+      </button>
+    </div>
+</mat-toolbar>
+<app-recipe-list></app-recipe-list>

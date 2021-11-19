@@ -24,7 +24,7 @@ export class LoginPageComponent implements OnInit {
   ngOnInit(): void {
     if (this._authService.isLoggedIn())
     {
-      this.router.navigate(['recipelist'])
+      this.router.navigate(['controlpanel'])
     }
   }
 
@@ -40,7 +40,7 @@ export class LoginPageComponent implements OnInit {
           user => 
           {
             this._authService.setSession(user);
-            this.router.navigate(['recipelist']);
+            this.router.navigate(['controlpanel']);
           },
           _ => this.loginInvalid = true
         );

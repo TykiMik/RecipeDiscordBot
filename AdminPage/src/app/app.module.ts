@@ -12,12 +12,14 @@ import { LoginPageComponent } from './login-page/login-page.component';
 
 import { AuthInterceptorService } from './auth-interceptor/auth-interceptor.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { ControlPanelComponent } from './control-panel/control-panel.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RecipeListComponent,
-    LoginPageComponent
+    LoginPageComponent,
+    ControlPanelComponent
   ],
   imports: [
     BrowserModule,
