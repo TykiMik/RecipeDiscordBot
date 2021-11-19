@@ -21,6 +21,7 @@ def transform_models(recipes):
     return recipes_list
 
 class RecipesApi(Resource):
+    @jwt_required()
     def get(self):
         page = request.args.get('page', 1, type=int)
         per_page = request.args.get('per_page', 30, type=int)
@@ -56,6 +57,7 @@ class RecipesApi(Resource):
         resp = {"items": recipes_list, "total_count": recipes_total_count}
         return Response(dumps(resp), mimetype="application/json", status=200)
 
+    @jwt_required()
     def delete(self):
         body = request.get_json()
         items = body['items']
@@ -67,6 +69,7 @@ class RecipesApi(Resource):
         return '', 204
 
 class RecipeApi(Resource):
+    @jwt_required()
     def delete(self, id):
         Recipes.objects.get(id=id).delete()
         return '', 204

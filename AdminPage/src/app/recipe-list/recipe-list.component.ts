@@ -5,7 +5,6 @@ import {of as observableOf} from 'rxjs';
 import {catchError, map, startWith, switchMap} from 'rxjs/operators';
 import {SelectionModel} from '@angular/cdk/collections';
 
-
 @Component({
   selector: 'app-recipe-list',
   templateUrl: './recipe-list.component.html',
