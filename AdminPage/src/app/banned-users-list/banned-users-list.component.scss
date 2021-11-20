@@ -1,11 +1,27 @@
+.form-card {
+    max-width: 400px;
+    margin: 2em auto;
+    text-align: center;
+}
+
+mat-card {
+    width: 80%;
+    margin: 10px auto;
+}
+  
+mat-card mat-form-field {
+    display: block;
+}
+
 /* Structure */
 .container {
     position: relative;
     width: 80%;
     margin: 10px auto;
+    
 }
 
-.filter-container{
+.form-container{
     padding-top: 10px;
     margin: 10px 10px;
 }

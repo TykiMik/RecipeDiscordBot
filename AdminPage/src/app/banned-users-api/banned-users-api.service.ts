@@ -12,7 +12,7 @@ export interface BannedUserResponse {
 
 export interface BannedUser {
   id: string;
-  creator_id: bigint;
+  creator_id: string;
   ban_date: Date;
 }
 
@@ -45,6 +45,17 @@ export class BannedUsersApiService {
       },
     };
     return this.http.delete(this.apiURL,options)
+      .pipe(
+        retry(2),
+        catchError(this.handleError)
+      );
+  }
+
+  newBannedUser(id: string){
+    return this.http.post(this.apiURL, 
+    {
+      creator_id: id
+    })
       .pipe(
         retry(2),
         catchError(this.handleError)

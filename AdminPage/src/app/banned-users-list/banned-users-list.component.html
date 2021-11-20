@@ -1,5 +1,30 @@
+
+<mat-card>
+  <mat-card-content>
+    <h2>Banned Users</h2>
+  </mat-card-content>
+</mat-card>
+
+<mat-card class="form-card">
+  <mat-card-content>
+    <form [formGroup]="form" (ngSubmit)="banNewUser()">
+      <mat-form-field class="full-width-input">
+        <input matInput placeholder="User id" formControlName="user_id" required pattern="^[0-9]*" minlength="18" maxlength="18">
+        <mat-error>
+          Please provide a (18 characters long) valid id!
+        </mat-error>
+      </mat-form-field>
+      <button mat-raised-button color="primary">Ban</button>
+    </form>
+  </mat-card-content>
+</mat-card>
+
+
 <div class="container mat-elevation-z8">
-    <div class="filter-container">
+    
+    <div class="form-container">
+      
+
       <button class="delete_btn" mat-fab color="primary" (click)="deleteSelected()" [disabled]="!selection.hasValue()">
         <mat-icon>delete</mat-icon>
       </button>

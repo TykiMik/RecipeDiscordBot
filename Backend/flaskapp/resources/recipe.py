@@ -19,6 +19,7 @@ def transform_models(recipes):
         else:
             recipe_dict['rating'] = 0
         del recipe_dict['ratings']
+        recipe_dict['creator_id'] = str(recipe_dict['creator_id'])
         recipes_list.append(recipe_dict)
 
     return recipes_list

@@ -15,6 +15,7 @@ def transform_models(banned_users):
         user_dict['ban_date'] = user.ban_date.isoformat()
         user_dict['id'] = str(user_dict['_id'])
         del user_dict['_id']
+        user_dict['creator_id'] = str(user_dict['creator_id'])
         user_list.append(user_dict)
 
     return user_list
