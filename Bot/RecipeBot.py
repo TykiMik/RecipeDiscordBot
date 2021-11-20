@@ -100,13 +100,6 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
                 if stored_recipe is not None:
                     await ctx.send(f'There is a recipe already stored as \"{ctx.author.name}\\{name}\"')
                     return
-                else:
-                    self.recipes.find_one_and_update(query, {'$inc': {'request_count': 1}})
-
-                stored_recipe = self.recipes.find_one(query)
-                if stored_recipe is not None:
-                    await ctx.send(f'There is a recipe already stored as \"{ctx.author.name}\\{name}\"')
-                    return
 
                 recipe = self.create_recipe(f"{ctx.author.name}#{ctx.author.discriminator}", ctx.author.id, name, content, tags)
 
