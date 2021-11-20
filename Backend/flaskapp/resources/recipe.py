@@ -14,7 +14,10 @@ def transform_models(recipes):
         recipe_dict['id'] = str(recipe_dict['_id'])
         del recipe_dict['_id']
         ratings = recipe_dict['ratings']
-        recipe_dict['rating'] = sum(ratings) / len(ratings)
+        if len(ratings) > 0:
+            recipe_dict['rating'] = sum(ratings) / len(ratings)
+        else:
+            recipe_dict['rating'] = 0
         del recipe_dict['ratings']
         recipes_list.append(recipe_dict)
 

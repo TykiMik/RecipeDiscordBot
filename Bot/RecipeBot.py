@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import discord
 import configparser
 import logging
@@ -268,7 +270,8 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
             "content": content,
             "tags": tags,
             "request_count": 0,
-            "ratings": []
+            "ratings": [],
+            "creation_date": datetime.now()
         }
 
     @staticmethod
