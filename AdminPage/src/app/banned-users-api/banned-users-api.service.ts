@@ -2,59 +2,53 @@ import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { HttpErrorResponse, HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { catchError, retry } from 'rxjs/operators';
-import * as moment from "moment";
 import { environment } from './../../environments/environment';
 
-export interface User {
-  token: string;
-  expires_in: number;
+export interface BannedUserResponse {
+  items: BannedUser[];
+  total_count: number;
+}
+
+
+export interface BannedUser {
+  id: string;
+  creator_id: bigint;
+  ban_date: Date;
 }
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
-  apiURL = environment.apiURL + 'auth';
+export class BannedUsersApiService {
+  apiURL = environment.apiURL + 'banned_users';
+
 
   constructor(private http: HttpClient) { }
 
-  Login(name: string, password: string){
-      return this.http.post<User>(this.apiURL + '/login', {name, password})
+  getBannedUsers(page: number, per_page: number = 30) {
+    const options = { 
+      params: new HttpParams()
+      .set('page', page+1)
+      .set('per_page', per_page)
+    }; 
+    return this.http.get<BannedUserResponse>(this.apiURL, options)
       .pipe(
         retry(2),
         catchError(this.handleError)
-      )
+      );
   }
 
-  setSession(authResult: User) {
-    const expiresAt = moment().add(authResult.expires_in,'second');
-
-    localStorage.setItem('id_token', authResult.token);
-    localStorage.setItem("expires_at", JSON.stringify(expiresAt.valueOf()) );
-  }
-
-  public isLoggedIn() {
-    return moment().isBefore(this.getExpiration());
-  }
-
-  isLoggedOut() {
-    return !this.isLoggedIn();
-  }
-
-  private getExpiration() {
-    const expiration = localStorage.getItem("expires_at");
-    if (expiration) {
-      const expiresAt = JSON.parse(expiration);
-      return moment(expiresAt);
-    }
-    else {
-      return moment(-1);
-    }
-  }
-
-  logout() {
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("expires_at");
+  deleteBannedUsers(ids: string[]){
+    const options = {
+      body: {
+        items: ids
+      },
+    };
+    return this.http.delete(this.apiURL,options)
+      .pipe(
+        retry(2),
+        catchError(this.handleError)
+      );
   }
 
   private handleError(error: HttpErrorResponse) {

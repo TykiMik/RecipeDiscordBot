@@ -13,6 +13,9 @@ class Recipes(db.Document):
     ratings = db.ListField(db.IntField())
     creation_date = db.DateTimeField()
 
+class BannedUsers(db.Document):
+    creator_id = db.IntField(required=True, unique=True)
+    ban_date = db.DateTimeField(required=True)
 
 class Admins(db.Document):
     name = db.StringField(required=True, unique=True)
@@ -30,7 +33,3 @@ class Admins(db.Document):
             return False
 
 
-class BannedUsers(db.Document):
-    username = db.StringField(required=True)
-    user_id = db.IntField(required=True, unique=True)
-    ban_date = db.DateTimeField(required=True)

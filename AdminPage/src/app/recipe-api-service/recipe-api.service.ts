@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { HttpErrorResponse, HttpClient, HttpParams, HttpHeaders } from '@angular/common/http';
 import { catchError, retry } from 'rxjs/operators';
+import { environment } from './../../environments/environment';
 
 export interface RecipeResponse {
   items: Recipe[];
@@ -24,7 +25,7 @@ export interface Recipe {
 
 @Injectable({ providedIn: 'root' })
 export class RecipeApiService {
-  apiURL = 'http://192.168.66.118:5000/api/recipes';
+  apiURL = environment.apiURL + 'recipes';
 
   constructor(private http: HttpClient) { }
 
@@ -62,7 +63,7 @@ export class RecipeApiService {
         items: ids
       },
     };
-    return this.http.delete<RecipeResponse>(this.apiURL,options)
+    return this.http.delete(this.apiURL,options)
       .pipe(
         retry(2),
         catchError(this.handleError)

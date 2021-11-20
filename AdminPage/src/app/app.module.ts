@@ -13,13 +13,15 @@ import { LoginPageComponent } from './login-page/login-page.component';
 import { AuthInterceptorService } from './auth-interceptor/auth-interceptor.service';
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ControlPanelComponent } from './control-panel/control-panel.component';
+import { BannedUsersListComponent } from './banned-users-list/banned-users-list.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     RecipeListComponent,
     LoginPageComponent,
-    ControlPanelComponent
+    ControlPanelComponent,
+    BannedUsersListComponent
   ],
   imports: [
     BrowserModule,
