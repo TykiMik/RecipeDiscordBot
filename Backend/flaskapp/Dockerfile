@@ -1,16 +1,20 @@
-FROM python:alpine
+FROM ubuntu:20.04
 
 ENV GROUP_ID=1000 \
     USER_ID=1000
 
-WORKDIR /var/www/
+RUN apt update && apt install -y \
+    build-essential libssl-dev libffi-dev python3-dev python3-pip
 
-ADD . /var/www/
+ADD . /var/www/flaskapp
+
+WORKDIR /var/www/flaskapp
+
 RUN pip install -r requirements.txt
 RUN pip install gunicorn
 
-RUN addgroup -g $GROUP_ID www
-RUN adduser -D -u $USER_ID -G www www -s /bin/sh
+RUN addgroup --gid $GROUP_ID www
+RUN adduser --system --uid $USER_ID --gid $GROUP_ID --shell /bin/bash www
 
 USER www
 

@@ -5,6 +5,7 @@ import configparser
 import logging
 import uuid
 import io
+import os
 import json
 
 from pymongo import MongoClient, ReturnDocument
@@ -37,12 +38,10 @@ def main():
 
 
 def get_database():
-    config_obj = configparser.ConfigParser()
-    config_obj.read(CONFIG_FILE)
-
-    database_config = config_obj['MongoDB']
-    client = MongoClient(database_config['mongodb_address'])
-    return client[database_config['database']]
+    mongodb_address = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ[
+        'MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':' + os.environ['MONGODB_PORT'] + '/recipedb'
+    client = MongoClient(mongodb_address)
+    return client[os.environ['MONGODB_DATABASE']]
 
 
 class BotCommands(commands.Cog, name='Command module for recipe bot'):

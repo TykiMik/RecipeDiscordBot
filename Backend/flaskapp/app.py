@@ -10,19 +10,19 @@ application = Flask(__name__)
 api = Api(application)
 
 # for docker
-# application.config['MONGODB_DB'] = os.environ['MONGODB_DATABASE']
-# application.config['MONGODB_HOST'] = os.environ['MONGODB_HOSTNAME']
-# application.config['MONGODB_PORT'] = 27017
-# application.config['MONGODB_USERNAME'] = os.environ['MONGODB_USERNAME']
-# application.config['MONGODB_PASSWORD'] = os.environ['MONGODB_PASSWORD']
+application.config['MONGODB_DB'] = os.environ['MONGODB_DATABASE']
+application.config['MONGODB_HOST'] = os.environ['MONGODB_HOSTNAME']
+application.config['MONGODB_PORT'] = int(os.environ['MONGODB_PORT'])
+application.config['MONGODB_USERNAME'] = os.environ['MONGODB_USERNAME']
+application.config['MONGODB_PASSWORD'] = os.environ['MONGODB_PASSWORD']
 
 # for local testing
-application.config['MONGODB_SETTINGS'] = {
-    'host': 'mongodb://localhost:27017/RecipeBot'
-}
+#application.config['MONGODB_SETTINGS'] = {
+    #'host': 'mongodb://localhost:27017/RecipeBot'
+#}
 
 # for local
-application.config['SECRET_KEY'] = 'super-secret'
+application.config['SECRET_KEY'] = 'TshDVFTnebroQgqQKFS4Q5dWniWgFUCR785doAxj9PH4aFytivxihSyKy7oDFxBo'
 
 # for docker
 # application.config.from_envvar('ENV_FILE_LOCATION')

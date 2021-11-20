@@ -12,14 +12,25 @@ class Recipes(db.Document):
     request_count = db.IntField()
     ratings = db.ListField(db.IntField())
     creation_date = db.DateTimeField()
+    meta = {
+        "collection": "recipes"
+    }
+
 
 class BannedUsers(db.Document):
     creator_id = db.IntField(required=True, unique=True)
     ban_date = db.DateTimeField(required=True)
+    meta = {
+        "collection": "banned_users"
+    }
+
 
 class Admins(db.Document):
     name = db.StringField(required=True, unique=True)
     password = db.StringField(required=True, min_length=6)
+    meta = {
+        "collection": "admins"
+    }
 
     def hash_password(self):
         ph = PasswordHasher()
@@ -31,5 +42,3 @@ class Admins(db.Document):
             return ph.verify(self.password, password)
         except (VerifyMismatchError, VerificationError, InvalidHash):
             return False
-
-

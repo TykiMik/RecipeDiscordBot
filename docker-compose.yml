@@ -1,0 +1,112 @@
+version: '3'
+services:
+
+  mongodb:
+    image: mongo
+    container_name: mongo
+    restart: unless-stopped
+    command: mongod --auth
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongodbuser
+      MONGO_INITDB_ROOT_PASSWORD: 9vGzd6cKf94vAzUdu&^aUiFAK#mmQdornWX3
+      MONGO_INITDB_DATABASE: recipedb
+      MONGODB_DATA_DIR: /data/db
+      MONDODB_LOG_DIR: /dev/null
+    volumes:
+      - mongodbdata:/data/db
+      - ./Backend/mongoinit:/docker-entrypoint-initdb.d/:ro
+    networks:
+      - backend
+
+  flask:
+    build:
+      context: Backend/flaskapp
+      dockerfile: Dockerfile
+    container_name: flask
+    restart: unless-stopped
+    environment:
+      APP_ENV: "prod"
+      APP_DEBUG: "False"
+      APP_PORT: 5000
+      MONGODB_DATABASE: recipedb
+      MONGODB_USERNAME: flaskuser
+      MONGODB_PASSWORD: flaskpass
+      MONGODB_HOSTNAME: mongodb
+      MONGODB_PORT: 27017
+      PYTHONPATH: $PYTHONPATH:/var/www
+    volumes:
+      - ./Backend/flaskapp:/var/www/flaskapp:ro
+    depends_on:
+      - mongodb
+    networks:
+      - backend
+
+  adminpage:
+    build:
+      context: AdminPage
+      dockerfile: Dockerfile
+    container_name: adminpage
+    restart: unless-stopped
+    volumes:
+      - angulardata:/usr/share/nginx/html
+    depends_on:
+      - mongodb
+    networks:
+      - backend
+
+  recipebot:
+    build:
+      context: Bot
+      dockerfile: Dockerfile
+    container_name: recipebot
+    restart: unless-stopped
+    environment:
+      MONGODB_DATABASE: recipedb
+      MONGODB_USERNAME: botuser
+      MONGODB_PASSWORD: botpass
+      MONGODB_HOSTNAME: mongodb
+      MONGODB_PORT: 27017
+    volumes:
+      - ./Bot:/usr/src/RecipeBot
+    depends_on:
+      - mongodb
+      - flask
+    networks:
+      - backend
+
+  webserver:
+    build:
+      context: Backend/nginx
+      dockerfile: Dockerfile
+    container_name: webserver
+    restart: unless-stopped
+    environment:
+      APP_ENV: "prod"
+      APP_NAME: "webserver"
+      APP_DEBUG: "true"
+      SERVICE_NAME: "webserver"
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - nginxdata:/var/log/nginx
+    depends_on:
+      - flask
+      - adminpage
+    networks:
+      - frontend  
+  
+
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
+
+volumes:
+  mongodbdata:
+    driver: local
+  angulardata:
+    driver: local
+  nginxdata:
+    driver: local
