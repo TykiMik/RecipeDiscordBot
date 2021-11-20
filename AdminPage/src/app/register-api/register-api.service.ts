@@ -2,59 +2,53 @@ import { Injectable } from '@angular/core';
 import { throwError } from 'rxjs';
 import { HttpErrorResponse, HttpClient } from '@angular/common/http';
 import { catchError, retry } from 'rxjs/operators';
-import * as moment from "moment";
 import { environment } from './../../environments/environment';
 
-export interface User {
-  token: string;
-  expires_in: number;
+export interface AdminResponse {
+  items: Admin[];
 }
+
+
+export interface Admin {
+  name: string;
+}
+
 
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
-  apiURL = environment.apiURL + 'auth/login';
+export class RegisterApiService {
+  apiURL = environment.apiURL + 'auth/register';
+
 
   constructor(private http: HttpClient) { }
 
-  Login(name: string, password: string){
-      return this.http.post<User>(this.apiURL, {name, password})
+  getAdmins() {
+    return this.http.get<AdminResponse>(this.apiURL)
       .pipe(
         retry(2),
         catchError(this.handleError)
-      )
+      );
   }
 
-  setSession(authResult: User) {
-    const expiresAt = moment().add(authResult.expires_in,'second');
-
-    localStorage.setItem('id_token', authResult.token);
-    localStorage.setItem("expires_at", JSON.stringify(expiresAt.valueOf()) );
+  deleteCurrentAdmin(){
+    return this.http.delete(this.apiURL)
+      .pipe(
+        retry(2),
+        catchError(this.handleError)
+      );
   }
 
-  public isLoggedIn() {
-    return moment().isBefore(this.getExpiration());
-  }
-
-  isLoggedOut() {
-    return !this.isLoggedIn();
-  }
-
-  private getExpiration() {
-    const expiration = localStorage.getItem("expires_at");
-    if (expiration) {
-      const expiresAt = JSON.parse(expiration);
-      return moment(expiresAt);
-    }
-    else {
-      return moment(-1);
-    }
-  }
-
-  logout() {
-    localStorage.removeItem("id_token");
-    localStorage.removeItem("expires_at");
+  newAdminUser(name: string, password: string){
+    return this.http.post(this.apiURL, 
+    {
+      name: name,
+      password: password
+    })
+      .pipe(
+        retry(2),
+        catchError(this.handleError)
+      );
   }
 
   private handleError(error: HttpErrorResponse) {
@@ -70,4 +64,5 @@ export class AuthService {
     // Return an observable with a user-facing error message.
     return throwError(() => new Error('Something bad happened; please try again later.'));
   }
+
 }

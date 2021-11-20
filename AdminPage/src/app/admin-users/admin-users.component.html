@@ -1,0 +1,65 @@
+
+<mat-card class="title-mat-card">
+<mat-card-content>
+    <h2>Admin Users</h2>
+</mat-card-content>
+</mat-card>
+ 
+
+<div class="component-container">
+    
+    <div class="first-cell">
+        <mat-card class="form-card">
+            <mat-card-content>
+            <form [formGroup]="form" (ngSubmit)="newAdmin()">
+                <h2>Register</h2>
+                <mat-error *ngIf="creationError">
+                    User cannot be created!
+                </mat-error>
+                <mat-form-field class="full-width-input">
+                    <input matInput placeholder="Name" formControlName="username" required>
+                  </mat-form-field>
+                  <mat-form-field class="full-width-input">
+                    <input matInput type="password" placeholder="Password" formControlName="password" required>
+                    <mat-error>
+                      Please provide a valid password
+                    </mat-error>
+                  </mat-form-field>
+                  <button mat-raised-button color="primary">Register</button>
+            </form>
+            </mat-card-content>
+        </mat-card>
+    
+        <div class="button-row">
+            <mat-error *ngIf="deletionError">
+                User cannot be deleted!
+            </mat-error>
+            <button mat-raised-button color="warn" (click)="deleteCurrentuser()">Delete logged in user</button>
+        </div>
+    </div>
+    
+  
+
+    <div class="table-container mat-elevation-z8">
+        <div class="loading-shade"
+             *ngIf="isLoadingResults">
+          <mat-spinner *ngIf="isLoadingResults"></mat-spinner>
+        </div>
+      
+        <div>
+          <table mat-table [dataSource]="admin_users" class="table">
+    
+            <ng-container matColumnDef="name">
+              <th mat-header-cell *matHeaderCellDef>Admin name</th>
+              <td mat-cell *matCellDef="let row">{{row.name}}</td>
+            </ng-container>
+    
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+          </table>
+        </div>
+    </div>
+</div>
+
+
+  

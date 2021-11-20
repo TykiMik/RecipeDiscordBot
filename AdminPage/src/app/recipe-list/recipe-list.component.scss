@@ -7,6 +7,7 @@ mat-card mat-form-field {
   display: block;
 }
 
+
 .detail-row{
   width: 80%;
 }
@@ -61,16 +62,6 @@ table {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-/* Column Widths */
-.mat-column-number,
-.mat-column-state {
-  max-width: 64px;
-}
-
-.mat-column-created {
-  max-width: 124px;
 }
 
 .delete_btn{

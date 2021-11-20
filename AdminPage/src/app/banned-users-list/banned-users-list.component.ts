@@ -92,14 +92,12 @@ export class BannedUsersListComponent  implements AfterViewInit{
   {
     this.formSubmitAttempt = false;
     if (this.form.valid) {
-        console.log("valid user id")
         const user_id = this.form.get('user_id')?.value;
         this._bannedUsersService.newBannedUser(user_id).subscribe(() => {
           this.paginator!.page.emit();
           this.selection.clear();
         });
     } else {
-      console.log("not valid user id")
       this.formSubmitAttempt = true;
     }
   }

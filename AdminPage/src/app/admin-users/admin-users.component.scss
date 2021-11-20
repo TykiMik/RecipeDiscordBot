@@ -1,0 +1,58 @@
+.title-mat-card {
+    width: 80%;
+    margin: 10px auto;
+}
+
+mat-card mat-form-field {
+    display: block;
+}
+
+.table-container {
+    width: 45%;
+    margin: 1em auto;
+}
+
+.component-container {
+    width: 80%;
+    margin: 1em auto;
+    display: flex;
+}
+
+.first-cell {
+    width: 45%;
+    margin: 1em auto;
+}
+
+.container {
+    position: relative;
+    width: 80%;
+    margin: 10px auto;
+}
+  
+.table-container {
+    position: relative;
+    min-height: 200px;
+    max-height: 600px;
+    overflow: auto;
+}
+  
+table {
+    width: 100%;
+}
+  
+.loading-shade {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 56px;
+    right: 0;
+    background: rgba(0, 0, 0, 0.15);
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.button-row {
+    margin: 1em auto;
+}

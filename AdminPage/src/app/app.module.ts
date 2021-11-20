@@ -14,6 +14,7 @@ import { AuthInterceptorService } from './auth-interceptor/auth-interceptor.serv
 import { HTTP_INTERCEPTORS } from '@angular/common/http';
 import { ControlPanelComponent } from './control-panel/control-panel.component';
 import { BannedUsersListComponent } from './banned-users-list/banned-users-list.component';
+import { AdminUsersComponent } from './admin-users/admin-users.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { BannedUsersListComponent } from './banned-users-list/banned-users-list.
     RecipeListComponent,
     LoginPageComponent,
     ControlPanelComponent,
-    BannedUsersListComponent
+    BannedUsersListComponent,
+    AdminUsersComponent
   ],
   imports: [
     BrowserModule,
