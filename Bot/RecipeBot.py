@@ -7,7 +7,7 @@ import uuid
 import io
 import json
 
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 from discord.ext import commands
 from pathlib import Path
 from statistics import mean, StatisticsError
@@ -116,12 +116,12 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
             "creator": creator,
             "name": name
         }
-        stored_recipe = self.recipes.find_one(query)
+        stored_recipe = self.recipes.find_one_and_update(query,
+                                                         {'$inc': {'request_count': 1}},
+                                                         return_document=ReturnDocument.AFTER)
         if stored_recipe is None:
             await ctx.send(f'Sorry I couldn\'t find any recipe as \"{extended_name}\"')
             return
-        else:
-            self.recipes.find_one_and_update(query, {'$inc': {'request_count': 1}})
 
         if not file:
             response = self.create_recipe_message(
