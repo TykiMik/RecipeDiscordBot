@@ -1,7 +1,7 @@
 FROM nginx:1.21.4
 
-RUN  rm -rf /etc/nginx/http.d/default.conf
+RUN  rm -rf /etc/nginx/conf.d/default.conf
 
-COPY http.d/app.conf /etc/nginx/http.d/app.conf
+COPY conf.d/proxy.conf /etc/nginx/conf.d/proxy.conf
 
 EXPOSE 80 443

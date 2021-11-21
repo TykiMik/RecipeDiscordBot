@@ -16,7 +16,8 @@ services:
       - mongodbdata:/data/db
       - ./Backend/mongoinit:/docker-entrypoint-initdb.d/:ro
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.21.0.2
 
   flask:
     build:
@@ -39,7 +40,8 @@ services:
     depends_on:
       - mongodb
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.21.0.3
 
   adminpage:
     build:
@@ -52,7 +54,8 @@ services:
     depends_on:
       - mongodb
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.21.0.4
 
   recipebot:
     build:
@@ -72,7 +75,8 @@ services:
       - mongodb
       - flask
     networks:
-      - backend
+      backend:
+        ipv4_address: 172.21.0.5
 
   webserver:
     build:
@@ -94,14 +98,23 @@ services:
       - flask
       - adminpage
     networks:
-      - frontend  
+      frontend:
+        ipv4_address: 172.22.0.2
+      backend:
+        ipv4_address: 172.21.0.6
   
 
 networks:
   frontend:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.22.0.0/16
   backend:
     driver: bridge
+    ipam:
+      config:
+        - subnet: 172.21.0.0/16
 
 volumes:
   mongodbdata:

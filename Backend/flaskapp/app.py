@@ -5,9 +5,12 @@ from flaskapp.database.db import initialize_db
 from flaskapp.resources.routes import initialize_routes
 from flask_jwt_extended import JWTManager
 from flask_cors import CORS
+import logging
 
 application = Flask(__name__)
 api = Api(application)
+
+logging.basicConfig(filename='/tmp/debug.log', level=logging.DEBUG)
 
 # for docker
 application.config['MONGODB_DB'] = os.environ['MONGODB_DATABASE']
