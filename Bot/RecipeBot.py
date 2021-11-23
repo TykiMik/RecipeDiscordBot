@@ -97,13 +97,13 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
                 }
                 stored_recipe = self.recipes.find_one(query)
                 if stored_recipe is not None:
-                    await ctx.send(f'There is a recipe already stored as \"{ctx.author.name}\\{name}\"')
+                    await ctx.send(f'There is a recipe already stored as \"{ctx.author.name}#{ctx.author.discriminator}\\{name}\"')
                     return
 
                 recipe = self.create_recipe(f"{ctx.author.name}#{ctx.author.discriminator}", ctx.author.id, name, content, tags)
 
                 self.recipes.insert_one(recipe)
-                await ctx.send(f'Recipe added, request it anytime with !get_recipe \"{ctx.author.name}\\{name}\"')
+                await ctx.send(f'Recipe added, request it anytime with !get_recipe \"{ctx.author.name}#{ctx.author.discriminator}\\{name}\"')
             else:
                 await ctx.send('Recipe file must be a text/plain document!')
                 return
@@ -182,9 +182,9 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
         result_recipe_names = []
         for r in results:
             try:
-                result_recipe_names.append(f"\"{r['creator']}\\{r['name']}\" (Popularity: {str(r['request_count'])}, Avg. rating: {str(mean(r['ratings']))})")
+                result_recipe_names.append(f"\"{r['creator']}\\{r['name']}\" (Popularity: {str(int(r['request_count']))}, Avg. rating: {str(round(mean(r['ratings']), 4))})")
             except StatisticsError:
-                result_recipe_names.append(f"\"{r['creator']}\\{r['name']}\" (Popularity: {str(r['request_count'])}, Avg. rating: No ratings yet)")
+                result_recipe_names.append(f"\"{r['creator']}\\{r['name']}\" (Popularity: {str(int(r['request_count']))}, Avg. rating: No ratings yet)")
 
         result_str = "\n".join(result_recipe_names)
         await ctx.send(f'I found these:\n{result_str}')
@@ -199,7 +199,7 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
             "creator_id": ctx.author.id,
             "name": name
         }
-        tags = map(lambda x: x.replace(' ', '_'), tags)
+        tags = list(map(lambda x: x.replace(' ', '_'), tags))
         if self.recipes.find_one_and_update(query, {'$push': {'tags': {'$each': tags}}}) is None:
             await ctx.send(f'Sorry I couldn\'t find any recipe as \"{extended_name}\"')
             return
@@ -246,7 +246,7 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
         if (r := self.recipes.find_one_and_update(query, {'$push': {'ratings': int(rating)}})) is None:
             await ctx.send(f'Sorry I couldn\'t find any recipe as \"{extended_name}\"')
             return
-        await ctx.send(f'You have rated \"{extended_name}\" {rating}/5. Its new average rating is: {mean(r["ratings"])}')
+        await ctx.send(f'You have rated \"{extended_name}\" {rating}/5. Its new average rating is: {str(round(mean(r["ratings"]), 4))}')
 
     @commands.Cog.listener()
     async def on_command_error(self, ctx, error):
@@ -280,10 +280,10 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
         {tags}
         
         Popularity:
-        {request_count}
+        {str(int(request_count))}
         
         Avg. rating:
-        {str(mean(ratings)) if len(ratings) > 0 else 'No ratings yet'}'''
+        {str(round(mean(ratings), 4)) if len(ratings) > 0 else 'No ratings yet'}'''
 
         return io.StringIO(text)
 
@@ -297,7 +297,7 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
         embed.add_field(name="**Recipe**", value=content, inline=False)
         embed.add_field(name="*Tags*", value=tags, inline=False)
         embed.add_field(name="*Popularity*", value=request_count, inline=False)
-        embed.add_field(name="*Avg. rating*", value=str(mean(ratings)) if len(ratings) > 0 else 'No ratings yet', inline=False)
+        embed.add_field(name="*Avg. rating*", value=str(round(mean(ratings), 4)) if len(ratings) > 0 else 'No ratings yet', inline=False)
 
         return embed
 
