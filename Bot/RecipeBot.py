@@ -39,7 +39,7 @@ def main():
 
 def get_database():
     mongodb_address = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ[
-        'MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':' + os.environ['MONGODB_PORT'] + '/recipedb'
+        'MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':' + os.environ['MONGODB_PORT'] + "/" + os.environ['MONGODB_DATABASE']
     client = MongoClient(mongodb_address)
     return client[os.environ['MONGODB_DATABASE']]
 
@@ -215,7 +215,7 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
             "creator_id": ctx.author.id,
             "name": name
         }
-        tags = map(lambda x: x.replace(' ', '_'), tags)
+        tags = list(map(lambda x: x.replace(' ', '_'), tags))
         if self.recipes.find_one_and_update(query, {'$pullAll': {'tags': tags}}) is None:
             await ctx.send(f'Sorry I couldn\'t find any recipe as \"{extended_name}\"')
             return
@@ -231,7 +231,7 @@ class BotCommands(commands.Cog, name='Command module for recipe bot'):
             "creator_id": ctx.author.id,
             "name": name
         }
-        if self.recipes.find_one_and_update(query, {'$set': {'tags': []}}) in None:
+        if self.recipes.find_one_and_update(query, {'$set': {'tags': []}}) is None:
             await ctx.send(f'Sorry I couldn\'t find any recipe as \"{extended_name}\"')
             return
         await ctx.send(f'I removed all tags from the recipe \"{extended_name}\".')
